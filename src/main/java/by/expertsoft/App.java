@@ -125,6 +125,16 @@ public class App {
     }
     //Ex. 5.5: end of function
 
+    //Ex. 5.9: start of function
+    public static Stream<String> getZoneIdsWithNotFullOffset() {
+        final LocalDateTime ldt = LocalDateTime.now();
+        return ZoneId.getAvailableZoneIds().stream().filter( (zone) -> {
+            final ZoneOffset offset = ldt.atZone(ZoneId.of(zone)).getOffset();
+            return offset.getTotalSeconds() % (60 * 60) != 0;
+        });
+    }
+    //Ex. 5.9: end of function
+
     public static void main( String[] args ) throws InterruptedException {
         {   //Ex. 1.4: start
 
@@ -199,7 +209,6 @@ public class App {
             System.out.println("\nEx.5.1:");
             LocalDate programmersDay = getProgrammersDay(LocalDate.of(2014, 1, 1));
             System.out.println(programmersDay);
-            System.out.println();
         }   //Ex. 5.1: end
 
         {   //Ex. 5.4: start
@@ -211,8 +220,11 @@ public class App {
         {   //Ex. 5.5: start
             System.out.println("\nEx. 5.5:");
             System.out.println("You lived " + getNumberOfDaysYouWasAlive(LocalDate.of(1995, 12, 24)) + " days");
-            System.out.println();
         }   //Ex. 5.5: end
 
+        {   //Ex. 5.9: start
+            System.out.println("\nEx. 5.9:");
+            getZoneIdsWithNotFullOffset().forEach(System.out::println);
+        }   //Ex. 5.9: end
     }
 }

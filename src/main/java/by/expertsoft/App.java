@@ -119,6 +119,12 @@ public class App {
     }
     //Ex. 5.4: end of function
 
+    //Ex. 5.5: start of function
+    public static long getNumberOfDaysYouWasAlive(final LocalDate yourBirthday){
+        return Duration.between(yourBirthday.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+    }
+    //Ex. 5.5: end of function
+
     public static void main( String[] args ) throws InterruptedException {
         {   //Ex. 1.4: start
 
@@ -201,6 +207,12 @@ public class App {
             printCalendar(3, 2013);
             System.out.println();
         }   //Ex. 5.4: end
+
+        {   //Ex. 5.5: start
+            System.out.println("\nEx. 5.5:");
+            System.out.println("You lived " + getNumberOfDaysYouWasAlive(LocalDate.of(1995, 12, 24)) + " days");
+            System.out.println();
+        }   //Ex. 5.5: end
 
     }
 }

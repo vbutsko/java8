@@ -102,16 +102,15 @@ public class App {
 
     //Ex. 5.4: start of function
     public static void printCalendar(int month, int year) {
-        System.out.println(Month.of(month) + " " + Year.of(year));
+        System.out.println("    " + Month.of(month) + " " + Year.of(year));
         IntStream.iterate(1, i -> i + 1).limit(7)
-                .forEach(i -> System.out.print(" " + DayOfWeek.of(i).toString().substring(0, 2)));
+                .forEach(i -> System.out.print(" " + DayOfWeek.of(i).getDisplayName(TextStyle.SHORT, Locale.getDefault())));
         System.out.println();
-        Collections.nCopies(LocalDate.of(year, month, 1).getDayOfWeek().getValue() - 1, "   ")
+        Collections.nCopies(LocalDate.of(year, month, 1).getDayOfWeek().getValue() - 1, "    ")
                 .forEach(System.out::print);
-        IntStream.range(1, 1 + YearMonth.of(year, month).lengthOfMonth()).forEach((day) -> {
-            LocalDate dayOfMonth = LocalDate.of(year, month, day);
-            String prefix = day < 10 ? "  " : " ";
-            if (dayOfMonth.getDayOfWeek() == DayOfWeek.SUNDAY) {
+        IntStream.range(1, 1 + YearMonth.of(year, month).lengthOfMonth()).forEachOrdered((day) -> {
+            String prefix = day < 10 ? "   " : "  ";
+            if (LocalDate.of(year, month, day).getDayOfWeek() == DayOfWeek.SUNDAY) {
                 System.out.println(prefix + day);
             } else {
                 System.out.print(prefix + day);

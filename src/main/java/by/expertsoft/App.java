@@ -135,6 +135,14 @@ public class App {
     }
     //Ex. 5.9: end of function
 
+    //Ex. 5.11: start of function
+    public static Duration calculateHowLongIsFlight(LocalDateTime start, String startZoneId, LocalDateTime finish, String finishZoneId) {
+        ZonedDateTime zonedStart = ZonedDateTime.of(start, ZoneId.of(startZoneId));
+        ZonedDateTime zonedFinish = ZonedDateTime.of(finish, ZoneId.of(finishZoneId));
+        return Duration.between(zonedFinish, zonedStart);
+    }
+    //Ex. 5.11: end of function
+
     public static void main( String[] args ) throws InterruptedException {
         {   //Ex. 1.4: start
 
@@ -226,5 +234,11 @@ public class App {
             System.out.println("\nEx. 5.9:");
             getZoneIdsWithNotFullOffset().forEach(System.out::println);
         }   //Ex. 5.9: end
+
+        {   //Ex. 5.11: start
+            System.out.println("\nEx. 5.11:");
+            System.out.println(calculateHowLongIsFlight(LocalDateTime.of(2018, 2, 1, 14, 5), "America/Los_Angeles",
+                    LocalDateTime.of(2018, 2, 1, 16, 40), "Europe/Berlin").);
+        }   //Ex. 5.11: end
     }
 }

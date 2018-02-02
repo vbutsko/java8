@@ -5,9 +5,11 @@ import by.expertsoft.myiterator.AlternateIterator;
 import by.expertsoft.myrunnable.ThrowingRunnable;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.*;
 import java.time.format.TextStyle;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
@@ -143,6 +145,26 @@ public class App {
     }
     //Ex. 5.11: end of function
 
+    //Ex. 6.5: start of function
+    public static Map<String, Set<File>> getWordAndFilesStatistics(File[] files) {
+        final ConcurrentHashMap<String, Set<File>> statistics = new ConcurrentHashMap();
+        Stream.of(files).parallel().forEach(file -> {
+            try {
+                Scanner scanner = new Scanner(file);
+                while(scanner.hasNext()) {
+                    statistics.merge(scanner.next(), new HashSet<File>(Collections.singletonList(file)), (oldValue, newValue) -> {
+                        oldValue.addAll(newValue);
+                        return oldValue;
+                    });
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        return statistics;
+    }
+    //Ex. 6.5: end of function
+
     public static void main( String[] args ) throws InterruptedException {
         {   //Ex. 1.4: start
 
@@ -238,7 +260,19 @@ public class App {
         {   //Ex. 5.11: start
             System.out.println("\nEx. 5.11:");
             System.out.println(calculateHowLongIsFlight(LocalDateTime.of(2018, 2, 1, 14, 5), "America/Los_Angeles",
-                    LocalDateTime.of(2018, 2, 1, 16, 40), "Europe/Berlin").);
+                    LocalDateTime.of(2018, 2, 1, 16, 40), "Europe/Berlin"));
         }   //Ex. 5.11: end
+
+        {   //Ex. 6.5: start
+            System.out.println("\nEx. 6.5:");
+            File files[] = {new File("ex_1_4_file_3.txt"), new File("ex_1_4_file_1.txt"),
+                    new File("ex_1_4_file_2.txt"), new File("ex_6_5_file_1.txt"),
+                    new File("ex_6_5_file_2.txt"), new File("ex_6_5_file_3.txt")};
+            getWordAndFilesStatistics(files).forEach((k, v) -> {
+                System.out.print(k + ": { ");
+                v.forEach(s -> System.out.print(s + ", "));
+                System.out.println("}");
+            });
+        }   //Ex. 6.5: end
     }
 }

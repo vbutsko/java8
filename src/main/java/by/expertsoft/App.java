@@ -2,6 +2,7 @@ package by.expertsoft;
 
 import by.expertsoft.mycollection.Collection2;
 import by.expertsoft.myiterator.AlternateIterator;
+import by.expertsoft.mymodel.Matrix;
 import by.expertsoft.myrunnable.ThrowingRunnable;
 
 import java.io.File;
@@ -172,6 +173,16 @@ public class App {
                 .getKey();
     }
     //Ex. 6.7: end of function
+
+    //Ex. 6.9: start of function
+    public static long getFn(int n) {
+        Matrix[] matrixArray = new Matrix[n];
+        Arrays.parallelSetAll(matrixArray, i -> new Matrix(2, 2, new long[] {1, 1, 1, 0}));
+        Arrays.parallelPrefix(matrixArray, Matrix::multiple);
+        return matrixArray[n - 1].getAt(0, 0);
+    }
+    //Ex. 6.9: end of function
+
     public static void main( String[] args ) throws InterruptedException {
         {   //Ex. 1.4: start
 
@@ -289,5 +300,11 @@ public class App {
             map.put("item 4", 111231231231231l);  map.put("item 5", 11231l);  map.put("item 6", 141231231l);
             System.out.println(getKeyWithMaxValue(map));
         }   //Ex. 6.7: end
+
+        {   //Ex. 6.9: start
+            System.out.println("\nEx. 6.9:");
+            int n = 9;
+            System.out.println("n = " + n + ", Fn = " + getFn(n));
+        }   //Ex. 6.9: end
     }
 }

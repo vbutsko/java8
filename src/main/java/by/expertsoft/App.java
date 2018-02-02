@@ -165,6 +165,13 @@ public class App {
     }
     //Ex. 6.5: end of function
 
+    //Ex. 6.7: start of function
+    public static String getKeyWithMaxValue(ConcurrentHashMap<String, Long> map) {
+        return map.reduceEntries(1,
+                (entry1, entry2) -> entry2.getValue() > entry1.getValue() ? entry2 : entry1)
+                .getKey();
+    }
+    //Ex. 6.7: end of function
     public static void main( String[] args ) throws InterruptedException {
         {   //Ex. 1.4: start
 
@@ -274,5 +281,13 @@ public class App {
                 System.out.println("}");
             });
         }   //Ex. 6.5: end
+
+        {   //Ex. 6.7: start
+            System.out.println("\nEx. 6.7:");
+            ConcurrentHashMap<String, Long> map = new ConcurrentHashMap<>();
+            map.put("item 1", 1l);  map.put("item 2", -1123l);  map.put("item 3", 1231l);
+            map.put("item 4", 111231231231231l);  map.put("item 5", 11231l);  map.put("item 6", 141231231l);
+            System.out.println(getKeyWithMaxValue(map));
+        }   //Ex. 6.7: end
     }
 }

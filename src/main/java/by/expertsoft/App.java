@@ -1,17 +1,25 @@
 package by.expertsoft;
 
-import by.expertsoft.mycollection.Collection2;
 import by.expertsoft.myiterator.AlternateIterator;
 import by.expertsoft.mymodel.Matrix;
 import by.expertsoft.myrunnable.ThrowingRunnable;
+import com.sun.deploy.util.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.TextStyle;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -183,7 +191,48 @@ public class App {
     }
     //Ex. 6.9: end of function
 
-    public static void main( String[] args ) throws InterruptedException {
+    //Ex. 6.10: start of function
+    public static void showLinksFromUrl(final URL url) {
+        CompletableFuture<String> content = CompletableFuture.supplyAsync(() -> readPage(url));
+        content.thenApply(App::getLinks).thenAccept((links) -> {links.stream().forEach(System.out::println);});
+        ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
+    }
+
+    private static String readPage(URL url) {
+        String content = "";
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(url.openConnection().getInputStream(),
+                            StandardCharsets.UTF_8));
+            content = reader.lines().collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return content;
+        }
+    }
+
+    private static List<String> getLinks(String content) {
+        if (content == null || content.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        Document doc = Jsoup.parse(content); // this is your original HTML content
+        return doc.select("a[href]").stream().map(link -> link.attr("href"))
+                .filter(link -> link != null && (link.contains("http") || link.contains("www")))
+                .collect(Collectors.toList());
+    }
+    //Ex. 6.10: end of function
+
+    public static void main( String[] args ) throws InterruptedException, MalformedURLException {
         {   //Ex. 1.4: start
 
             File files[] = {new File("ex_1_4_file_3.txt"), new File("ex_1_4_file_1.txt"),
@@ -306,5 +355,10 @@ public class App {
             int n = 9;
             System.out.println("n = " + n + ", Fn = " + getFn(n));
         }   //Ex. 6.9: end
+
+        {   //Ex. 6.10: start
+            System.out.println("\nEx. 6.10: ");
+            showLinksFromUrl(new URL("https://www.gucci.com/pl/en_gb/"));
+        }   //Ex. 6.10: end
     }
 }

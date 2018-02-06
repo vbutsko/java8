@@ -10,17 +10,17 @@ import org.jsoup.nodes.Element;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.TextStyle;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -191,7 +191,7 @@ public class App {
     }
     //Ex. 6.9: end of function
 
-    //Ex. 6.10: start of function
+    //Ex. 6.10: start of functions
     public static void showLinksFromUrl(final URL url) {
         CompletableFuture<String> content = CompletableFuture.supplyAsync(() -> readPage(url));
         content.thenApply(App::getLinks).thenAccept((links) -> {links.stream().forEach(System.out::println);});
@@ -230,7 +230,40 @@ public class App {
                 .filter(link -> link != null && (link.contains("http") || link.contains("www")))
                 .collect(Collectors.toList());
     }
-    //Ex. 6.10: end of function
+    //Ex. 6.10: end of functions
+
+    //Ex. 6.11: start of functions
+    public static <T> CompletableFuture<T> repeat(Supplier<T> action, Predicate<T> until) {
+        return CompletableFuture.supplyAsync(action).comple;
+    }
+
+    private static Supplier<PasswordAuthentication> getPasswordAuthenticationSupplier() {
+        return () -> { ;
+            Console console = System.console();
+            if (console == null) {
+                throw new RuntimeException("Couldn't get Console instance");
+            }
+            console.printf("\nusername: ");
+            String username = console.readLine();
+            char passwordArray[] = console.readPassword("\nEnter your secret password: ");
+            console.printf("\n");
+
+            return new PasswordAuthentication(username, passwordArray);
+        };
+    }
+
+    private static Predicate<PasswordAuthentication> checkSecretPassword() {
+        return passAuth -> {
+            try {
+                Thread.sleep(1000);
+                return passAuth != null && "secret".equals(new String(passAuth.getPassword()));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return false;
+            }
+        };
+    }
+    //Ex. 6.11: end of functions
 
     public static void main( String[] args ) throws InterruptedException, MalformedURLException {
         {   //Ex. 1.4: start
@@ -360,5 +393,15 @@ public class App {
             System.out.println("\nEx. 6.10: ");
             showLinksFromUrl(new URL("https://www.gucci.com/pl/en_gb/"));
         }   //Ex. 6.10: end
+
+        {   //Ex. 6.11: start
+            try {
+                PasswordAuthentication result = repeat(getPasswordAuthenticationSupplier(), checkSecretPassword()).get();
+                System.out.println("\nEx. 6.11: ");
+                System.out.println("user with name \"" + result.getUserName() + "\" logged.");
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }   //Ex. 6.11: end
     }
 }

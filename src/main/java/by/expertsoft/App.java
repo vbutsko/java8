@@ -3,16 +3,13 @@ package by.expertsoft;
 import by.expertsoft.myiterator.AlternateIterator;
 import by.expertsoft.mymodel.Matrix;
 import by.expertsoft.myrunnable.ThrowingRunnable;
-import com.sun.deploy.util.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.TextStyle;
@@ -234,11 +231,13 @@ public class App {
 
     //Ex. 6.11: start of functions
     public static <T> CompletableFuture<T> repeat(Supplier<T> action, Predicate<T> until) {
-        return CompletableFuture.supplyAsync(action).comple;
+        final CompletableFuture<T> actrionData = CompletableFuture.supplyAsync(action);
+        final CompletableFuture<Boolean> check = actrionData.thenApplyAsync((T actionData) -> (until.test(actionData)));
+        return check.join() ? actrionData : repeat(action, until);
     }
 
     private static Supplier<PasswordAuthentication> getPasswordAuthenticationSupplier() {
-        return () -> { ;
+        return () -> {
             Console console = System.console();
             if (console == null) {
                 throw new RuntimeException("Couldn't get Console instance");
@@ -249,6 +248,12 @@ public class App {
             console.printf("\n");
 
             return new PasswordAuthentication(username, passwordArray);
+            /*Scanner scanner = new Scanner(System.in);
+            System.out.print("\nusername: ");
+            String username = scanner.next();
+            System.out.print("Enter your secret password: ");
+            String password = scanner.next();
+            return new PasswordAuthentication(username, password.toCharArray());*/
         };
     }
 
@@ -395,13 +400,11 @@ public class App {
         }   //Ex. 6.10: end
 
         {   //Ex. 6.11: start
-            try {
-                PasswordAuthentication result = repeat(getPasswordAuthenticationSupplier(), checkSecretPassword()).get();
-                System.out.println("\nEx. 6.11: ");
-                System.out.println("user with name \"" + result.getUserName() + "\" logged.");
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            System.out.println("\nEx. 6.11: ");
+            //PasswordAuthentication result = repeat(getPasswordAuthenticationSupplier(), checkSecretPassword()).get();
+            //System.out.println("user with name \"" + result.getUserName() + "\" logged.");
+            repeat(getPasswordAuthenticationSupplier(), checkSecretPassword())
+                    .thenAccept(res -> System.out.println("user with name \"" + res.getUserName() + "\" logged."));
         }   //Ex. 6.11: end
     }
 }

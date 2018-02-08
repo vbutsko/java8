@@ -238,7 +238,7 @@ public class App {
 
     private static Supplier<PasswordAuthentication> getPasswordAuthenticationSupplier() {
         return () -> {
-            Console console = System.console();
+            /*Console console = System.console();
             if (console == null) {
                 throw new RuntimeException("Couldn't get Console instance");
             }
@@ -247,13 +247,13 @@ public class App {
             char passwordArray[] = console.readPassword("\nEnter your secret password: ");
             console.printf("\n");
 
-            return new PasswordAuthentication(username, passwordArray);
-            /*Scanner scanner = new Scanner(System.in);
+            return new PasswordAuthentication(username, passwordArray);*/
+            Scanner scanner = new Scanner(System.in);
             System.out.print("\nusername: ");
             String username = scanner.next();
             System.out.print("Enter your secret password: ");
             String password = scanner.next();
-            return new PasswordAuthentication(username, password.toCharArray());*/
+            return new PasswordAuthentication(username, password.toCharArray());
         };
     }
 
